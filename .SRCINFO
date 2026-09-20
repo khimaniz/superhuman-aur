@@ -1,7 +1,7 @@
 pkgbase = superhuman
 	pkgdesc = The fastest email experience ever made (unofficial)
 	pkgver = 1041.0.51
-	pkgrel = 1
+	pkgrel = 2
 	url = https://superhuman.com
 	install = superhuman.install
 	arch = x86_64
@@ -25,7 +25,9 @@ pkgbase = superhuman
 	options = !strip
 	source = Superhuman-1041.0.51.exe::https://assets.mail.superhuman.com/webapp/download/Superhuman.exe
 	source = linux_tray.js
+	source = superhuman-login
 	sha256sums = SKIP
 	sha256sums = 2ca108b624f8e444e3ad4a70f5d066342a85dc6d245ce63220a91e5c2b4cfd25
+	sha256sums = c63a4cc3ff0b0c4ff1ef6a13fd1d97d16ba5b6dd9984f8df5c57efdd50f273a6
 
 pkgname = superhuman
