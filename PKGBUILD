@@ -6,7 +6,7 @@
 
 pkgname=superhuman
 pkgver=1041.0.51
-pkgrel=1
+pkgrel=2
 pkgdesc="The fastest email experience ever made (unofficial)"
 arch=('x86_64')
 url="https://superhuman.com"
@@ -22,9 +22,11 @@ install=superhuman.install
 source=(
     "Superhuman-${pkgver}.exe::https://assets.mail.superhuman.com/webapp/download/Superhuman.exe"
     "linux_tray.js"
+    "superhuman-login"
 )
 sha256sums=('SKIP'
-            '2ca108b624f8e444e3ad4a70f5d066342a85dc6d245ce63220a91e5c2b4cfd25')
+            '2ca108b624f8e444e3ad4a70f5d066342a85dc6d245ce63220a91e5c2b4cfd25'
+            'c63a4cc3ff0b0c4ff1ef6a13fd1d97d16ba5b6dd9984f8df5c57efdd50f273a6')
 noextract=("Superhuman-${pkgver}.exe")
 
 _electron_version="41.6.1"
@@ -158,16 +160,13 @@ _apply_patches() {
       return
     }"
 
-    _bundle_patch \
-        "Window: Ctrl shortcuts for Linux" \
-        optional \
-        1 \
-        "    _registerShortcuts(view) {" \
-        "    _registerShortcuts(view) {
-        if (process.platform === 'linux') {
-            this._registerWindowsShortcuts(view);
-            return;
-        }"
+    # NOTE: an earlier "Ctrl shortcuts for Linux" patch here called
+    # this._registerWindowsShortcuts(view), a method that doesn't exist in the
+    # shipped bundle (only the call site, no definition) - it threw during
+    # window creation and the app ran with no window ever appearing. The
+    # unpatched code path below already uses CmdOrCtrl accelerators, which
+    # Electron maps to Ctrl on Linux/Windows, so no Linux-specific branch is
+    # needed here at all.
 
     _bundle_patch \
         "Window: Zoom control for Linux" \
@@ -286,6 +285,9 @@ package() {
     # Create bin symlinks
     install -dm755 "$pkgdir/usr/bin"
     ln -s /opt/superhuman/superhuman "$pkgdir/usr/bin/superhuman"
+
+    # Manual OAuth login helper - see superhuman-login for why this exists
+    install -Dm755 "$srcdir/superhuman-login" "$pkgdir/usr/bin/superhuman-login"
 
     # Install desktop file
     install -Dm644 /dev/stdin "$pkgdir/usr/share/applications/superhuman.desktop" << 'EOF'
